@@ -22,7 +22,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var tv: TextView
     private var isok = true
     private var matrix = Array(3) { IntArray(3) { -1 } }
-    private var res = false
+    private var res1 = false
+    private var res2 = false
 
     @SuppressLint("SetTextI18n", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,47 +49,70 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         img6.setOnClickListener(this)
         img7.setOnClickListener(this)
         img8.setOnClickListener(this)
+        btn.setOnClickListener {
+            matrix = Array(3) { IntArray(3) { -1 } }
+            res1 = false
+            res2 = false
+            isok = true
+            img0.setImageResource(0)
+            img1.setImageResource(0)
+            img2.setImageResource(0)
+            img3.setImageResource(0)
+            img4.setImageResource(0)
+            img5.setImageResource(0)
+            img6.setImageResource(0)
+            img7.setImageResource(0)
+            img8.setImageResource(0)
+            tv.text = "Player X"
+        }
     }
 
     @SuppressLint("SetTextI18n")
     override fun onClick(view: View) {
         val image = findViewById<ImageView>(view.id)
+        if (image.drawable != null) return
         var row = image.tag.toString().toInt() / 3
         var col = image.tag.toString().toInt() % 3
+        if (res1 || res2) return
         if (isok) {
             matrix[row][col] = 1
             image.setImageResource(R.drawable.x)
             tv.text = tv.text.dropLast(1).toString() + "O"
             isok = false
+            res1 = isWin(1)
         } else {
             matrix[row][col] = 0
             image.setImageResource(R.drawable.o)
             tv.text = tv.text.dropLast(1).toString() + "X"
             isok = true
+            res2 = isWin(0)
+        }
+        if (res1) {
+            if (!tv.text.contains("X won")) {
+                tv.text = tv.text.dropLast(1).toString() + "X won"
+                btn.visibility = View.VISIBLE
+            }
+            return
+        }
+        if (res2) {
+            if (!tv.text.contains("O won")) {
+                tv.text = tv.text.dropLast(1).toString() + "O won"
+                btn.visibility = View.VISIBLE
+            }
+            return
         }
     }
 
-    fun isXwin(mat: Array<IntArray>): Boolean {
-        if (mat[0][0] == 1 && mat[0][1] == 1 && mat[0][2] == 1) return true
-        if (mat[1][0] == 1 && mat[1][1] == 1 && mat[1][2] == 1) return true
-        if (mat[2][0] == 1 && mat[2][1] == 1 && mat[2][2] == 1) return true
-        if (mat[0][0] == 1 && mat[1][0] == 1 && mat[2][0] == 1) return true
-        if (mat[0][1] == 1 && mat[1][1] == 1 && mat[2][1] == 1) return true
-        if (mat[0][2] == 1 && mat[1][2] == 1 && mat[2][2] == 1) return true
-        if (mat[0][0] == 1 && mat[1][1] == 1 && mat[2][2] == 1) return true
-        if (mat[0][2] == 1 && mat[1][1] == 1 && mat[2][0] == 1) return true
+    fun isWin(n: Int): Boolean {
+        if (matrix[0][0] == n && matrix[0][1] == n && matrix[0][2] == n) return true
+        if (matrix[1][0] == n && matrix[1][1] == n && matrix[1][2] == n) return true
+        if (matrix[2][0] == n && matrix[2][1] == n && matrix[2][2] == n) return true
+        if (matrix[0][0] == n && matrix[1][0] == n && matrix[2][0] == n) return true
+        if (matrix[0][1] == n && matrix[1][1] == n && matrix[2][1] == n) return true
+        if (matrix[0][2] == n && matrix[1][2] == n && matrix[2][2] == n) return true
+        if (matrix[0][0] == n && matrix[1][1] == n && matrix[2][2] == n) return true
+        if (matrix[0][2] == n && matrix[1][1] == n && matrix[2][0] == n) return true
         return false
     }
 
-    fun isOwin(mat: Array<IntArray>): Boolean {
-        if (mat[0][0] == 0 && mat[0][1] == 0 && mat[0][2] == 0) return true
-        if (mat[1][0] == 0 && mat[1][1] == 0 && mat[1][2] == 0) return true
-        if (mat[2][0] == 0 && mat[2][1] == 0 && mat[2][2] == 0) return true
-        if (mat[0][0] == 0 && mat[1][0] == 0 && mat[2][0] == 0) return true
-        if (mat[0][1] == 0 && mat[1][1] == 0 && mat[2][1] == 0) return true
-        if (mat[0][2] == 0 && mat[1][2] == 0 && mat[2][2] == 0) return true
-        if (mat[0][0] == 0 && mat[1][1] == 0 && mat[2][2] == 0) return true
-        if (mat[0][2] == 0 && mat[1][1] == 0 && mat[2][0] == 0) return true
-        return false
-    }
 }
