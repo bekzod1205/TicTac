@@ -3,6 +3,7 @@ package com.example.tictactoe
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -20,15 +21,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var img8: ImageView
     private lateinit var btn: Button
     private lateinit var tv: TextView
+    private lateinit var player_1: TextView
+    private lateinit var player_2: TextView
     private var isok = true
     private var matrix = Array(3) { IntArray(3) { -1 } }
     private var res1 = false
     private var res2 = false
+    private var count1 = 0
+    private var count2 = 0
 
     @SuppressLint("SetTextI18n", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val string: String? = intent.getStringExtra("keyString")
+        val string1: String? = intent.getStringExtra("keyString1")
+
         img0 = findViewById(R.id.img0)
         img1 = findViewById(R.id.img1)
         img2 = findViewById(R.id.img2)
@@ -40,6 +48,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         img8 = findViewById(R.id.img8)
         btn = findViewById(R.id.btn_1)
         tv = findViewById(R.id.player_id)
+        player_1 = findViewById(R.id.pl_1)
+        player_2 = findViewById(R.id.pl_2)
+        player_1.text = "$string: 0"
+        player_2.text = "$string1: 0"
         img0.setOnClickListener(this)
         img1.setOnClickListener(this)
         img2.setOnClickListener(this)
@@ -64,6 +76,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             img7.setImageResource(0)
             img8.setImageResource(0)
             tv.text = "Player X"
+            player_1.text = player_1.text.dropLast(1).toString() + count1
+            player_2.text = player_2.text.dropLast(1).toString() + count2
+            btn.visibility = View.INVISIBLE
         }
     }
 
@@ -91,6 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (!tv.text.contains("X won")) {
                 tv.text = tv.text.dropLast(1).toString() + "X won"
                 btn.visibility = View.VISIBLE
+                count1++
             }
             return
         }
@@ -98,9 +114,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (!tv.text.contains("O won")) {
                 tv.text = tv.text.dropLast(1).toString() + "O won"
                 btn.visibility = View.VISIBLE
+                count2++
             }
             return
         }
+        if (isMatrixFull()) btn.visibility = View.VISIBLE
     }
 
     fun isWin(n: Int): Boolean {
@@ -115,4 +133,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         return false
     }
 
+    fun isMatrixFull(): Boolean {
+        for (i in 0..2) {
+            for (j in 0..2) {
+                if (matrix[i][j] == -1) return false
+            }
+        }
+        return true
+    }
 }
