@@ -3,8 +3,9 @@ package com.example.tictactoe
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         img6.setOnClickListener(this)
         img7.setOnClickListener(this)
         img8.setOnClickListener(this)
+        var anim = AnimationUtils.loadAnimation(this, R.anim.anim_2)
         btn.setOnClickListener {
             matrix = Array(3) { IntArray(3) { -1 } }
             res1 = false
@@ -78,13 +80,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             tv.text = "Player X"
             player_1.text = player_1.text.dropLast(1).toString() + count1
             player_2.text = player_2.text.dropLast(1).toString() + count2
+            btn.startAnimation(anim)
             btn.visibility = View.INVISIBLE
         }
     }
 
+
     @SuppressLint("SetTextI18n")
     override fun onClick(view: View) {
         val image = findViewById<ImageView>(view.id)
+        var a = AnimationUtils.loadAnimation(this, R.anim.anim_1)
+        var b = AnimationUtils.loadAnimation(this, R.anim.anim_3)
         if (image.drawable != null) return
         var row = image.tag.toString().toInt() / 3
         var col = image.tag.toString().toInt() % 3
@@ -95,17 +101,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             tv.text = tv.text.dropLast(1).toString() + "O"
             isok = false
             res1 = isWin(1)
+            image.startAnimation(a)
         } else {
             matrix[row][col] = 0
             image.setImageResource(R.drawable.o)
             tv.text = tv.text.dropLast(1).toString() + "X"
             isok = true
             res2 = isWin(0)
+            image.startAnimation(a)
         }
         if (res1) {
             if (!tv.text.contains("X won")) {
                 tv.text = tv.text.dropLast(1).toString() + "X won"
                 btn.visibility = View.VISIBLE
+                btn.startAnimation(b)
                 count1++
             }
             return
@@ -114,11 +123,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (!tv.text.contains("O won")) {
                 tv.text = tv.text.dropLast(1).toString() + "O won"
                 btn.visibility = View.VISIBLE
+                btn.startAnimation(b)
                 count2++
             }
             return
         }
-        if (isMatrixFull()) btn.visibility = View.VISIBLE
+        if (isMatrixFull()) {
+            btn.visibility = View.VISIBLE
+            btn.startAnimation(b)
+        }
     }
 
     fun isWin(n: Int): Boolean {
